@@ -1,10 +1,17 @@
 <!DOCTYPE html>
-<html lang="de">
-  <head>
-  <meta charset="utf-8"/>
-    <title>Huillu</title>
-   </head>
-   <body>
-    <h1>HUILLU!</h1>
-   </body>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Huillu</title>
+</head>
+	<body>
+		<div id="hello" style="visibility: hidden; padding-bottom: 1em;">HUILLU HOSCHIBÄR!</div>
+
+		<button onclick="sayHello()">Da, drück das!</button>
+		<script>
+			function sayHello(){
+				document.getElementById("hello").style.visibility = "visible";
+			}
+		</script>
+	</body>
 </html>
