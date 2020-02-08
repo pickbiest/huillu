@@ -7,17 +7,19 @@
 	<body style="background-image: url(./Infinity-universe-stars-space-galaxy_1920x1200.jpg)">
 		<h1 style="color: green;">Zufallsauswahl</h1>
 		<div id="inputSelectionDiv">
-			<input id="fileSelect" type="file" style="display:none" onchange="handleFileSelect(this.files)"/>
-			<button id="fileSelectButton" onclick="document.getElementById('fileSelect').click()">Datei hochladen</button>
-			<button id="selectManualInput" onclick="manualInputSelected()">Liste eingeben</button>
+				<input id="fileSelect" type="file" accept=".csv" style="display:none" onchange="handleFileSelect(this.files)"/>
+				<button id="fileSelectButton" onclick="document.getElementById('fileSelect').click()">.csv-Datei hochladen</button>
+				<button id="selectManualInput" onclick="manualInputSelected()">Liste eingeben</button>		
 		</div>
 		<div id="manualInputDiv" style="display: none;">
-			<div>
+			<div style="padding-bottom: 1em;">
 				<label for="anzahlPicker">Anzahl:</label>
-				<input id="anzahlPicker" type="number" min="1" max="5"/>
+				<input id="anzahlPicker" type="number" step="1" min="1" max="5" value="1"/>
 			</div>
-			<input id="newListItemInput" type="text"/>
-			<button onclick="addListItem()">Hinzufügen</button>
+			<div id="manualSel">
+				<input id="newListItemInput" type="text"/>
+				<button onclick="addListItem()">Hinzufügen</button>
+			</div>
 			<button onclick="zufallsauswahl()">Ziehen</button>
 		</div>
 		<div id="outputDiv" style="color: white;">
@@ -27,8 +29,6 @@
 		<div id="chosen"></div>
 
 		<script>
-			var allItemsList = [];
-			
 			function manualInputSelected(){
 				document.getElementById("inputSelectionDiv").style.display = "none";
 				document.getElementById("manualInputDiv").style.display = "";
@@ -45,14 +45,31 @@
 			
 			function outputAll(text){
 				console.log(text);
-				document.getElementById("outputDiv").innerHTML = text;
+				//document.getElementById("outputDiv").innerHTML = text;
+				// todo: parse .csv
+				let zeilen = text.split(/\r?\n/);
+				zeilen.forEach(el => console.log(el));
+				let overnode = document.getElementById("itemList");
+				
+				zeilen.forEach(el => {
+					let node = document.createElement("li");
+					let text = document.createTextNode(el);
+					node.appendChild(text);
+					console.log(text);
+					overnode.appendChild(node);
+				})
+				
+				
+				//document.getElementById("chosen").appendChild(overnode);
+				document.getElementById("inputSelectionDiv").style.display = "none";
+				document.getElementById("manualInputDiv").style.display = "";
+				document.getElementById("manualSel").style.display = "none";
 			}
 			
 			function addListItem(){
 				let inputField = document.getElementById("newListItemInput");
 				let newItem = inputField.value;
-				allItemsList.push(newItem);
-				var itemList = document.getElementById("itemList");
+				let itemList = document.getElementById("itemList");
 				let newNode = document.createElement("li");
 				let newTextNode = document.createTextNode(newItem);
 				newNode.appendChild(newTextNode);
@@ -70,6 +87,9 @@
 				}
 				
 				let anzahl = parseInt(document.getElementById("anzahlPicker").value);
+				if(isNaN(anzahl)){
+					anzahl = 1;
+				}
 				console.log(Math.min(anzahl, list.children.length));
 				let overnode = document.createElement("ol");
 				let text = document.createTextNode("ausgewählt wurde: ");
@@ -83,11 +103,7 @@
 					console.log(text);
 					overnode.appendChild(node);
 				}
-				
-				//let zufallsItem = list.removeChild(list.children[Math.floor(Math.random()*list.children.length)]);
-				//let node = document.createElement("span");
-				//let text = document.createTextNode(`ausgewählt wurde: ${zufallsItem.innerHTML}`);
-				//node.appendChild(text);
+
 				document.getElementById("chosen").childNodes.forEach(el => el.parentNode.removeChild(el));
 				document.getElementById("chosen").appendChild(overnode);
 			}
