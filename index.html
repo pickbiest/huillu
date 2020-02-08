@@ -1,17 +1,102 @@
 <!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<title>Huillu</title>
-</head>
+<html lang="de">
+	<head>
+		<meta charset="utf-8">
+		<title>Huillu</title>
+	</head>
 	<body style="background-image: url(./Infinity-universe-stars-space-galaxy_1920x1200.jpg)">
-		<div id="hello" style="visibility: hidden; padding-bottom: 1em;">HUILLU HOSCHIBÄR!</div>
+		<h1 style="color: green;">Zufallsauswahl</h1>
+		<div id="inputSelectionDiv">
+			<input id="fileSelect" type="file" style="display:none" onchange="handleFileSelect(this.files)"/>
+			<button id="fileSelectButton" onclick="document.getElementById('fileSelect').click()">Datei hochladen</button>
+			<button id="selectManualInput" onclick="manualInputSelected()">Liste eingeben</button>
+		</div>
+		<div id="manualInputDiv" style="display: none;">
+			<div>
+				<label for="anzahlPicker">Anzahl:</label>
+				<input id="anzahlPicker" type="number" min="1" max="5"/>
+			</div>
+			<input id="newListItemInput" type="text"/>
+			<button onclick="addListItem()">Hinzufügen</button>
+			<button onclick="zufallsauswahl()">Ziehen</button>
+		</div>
+		<div id="outputDiv" style="color: white;">
+			<ol id="itemList">
+			</ol>
+		</div>
+		<div id="chosen"></div>
 
-		<button onclick="sayHello()">Da, drück das!</button>
 		<script>
-			function sayHello(){
-				document.getElementById("hello").style.visibility = "visible";
+			var allItemsList = [];
+			
+			function manualInputSelected(){
+				document.getElementById("inputSelectionDiv").style.display = "none";
+				document.getElementById("manualInputDiv").style.display = "";
+				document.getElementById("newListItemInput").focus();
+			}
+		
+			function handleFileSelect(files){
+				let file = files[0];
+				console.log(file);
+				let reader = new FileReader();
+				reader.onload = (() => outputAll(reader.result));
+				reader.readAsText(file);
+			}
+			
+			function outputAll(text){
+				console.log(text);
+				document.getElementById("outputDiv").innerHTML = text;
+			}
+			
+			function addListItem(){
+				let inputField = document.getElementById("newListItemInput");
+				let newItem = inputField.value;
+				allItemsList.push(newItem);
+				var itemList = document.getElementById("itemList");
+				let newNode = document.createElement("li");
+				let newTextNode = document.createTextNode(newItem);
+				newNode.appendChild(newTextNode);
+				itemList.appendChild(newNode);
+				inputField.value = "";
+				inputField.focus();
+			}
+			
+			function zufallsauswahl(){
+				let list = document.getElementById("itemList");
+				
+				// keine Listeneintraege => Abbruch			
+				if(list.children.length < 1){
+					return;
+				}
+				
+				let anzahl = parseInt(document.getElementById("anzahlPicker").value);
+				console.log(Math.min(anzahl, list.children.length));
+				let overnode = document.createElement("ol");
+				let text = document.createTextNode("ausgewählt wurde: ");
+				overnode.appendChild(text);
+				for(let i = 0; i < Math.min(anzahl, list.children.length); i++){
+					console.log("i: " + list.children.length);
+					let zufallsItem = list.removeChild(list.children[Math.floor(Math.random()*list.children.length)]);
+					let node = document.createElement("li");
+					text = document.createTextNode(zufallsItem.innerHTML);
+					node.appendChild(text);
+					console.log(text);
+					overnode.appendChild(node);
+				}
+				
+				//let zufallsItem = list.removeChild(list.children[Math.floor(Math.random()*list.children.length)]);
+				//let node = document.createElement("span");
+				//let text = document.createTextNode(`ausgewählt wurde: ${zufallsItem.innerHTML}`);
+				//node.appendChild(text);
+				document.getElementById("chosen").childNodes.forEach(el => el.parentNode.removeChild(el));
+				document.getElementById("chosen").appendChild(overnode);
 			}
 		</script>
+		
+		<style type="text/css">
+			body {
+				color: red;
+			}
+		</style}>
 	</body>
 </html>
